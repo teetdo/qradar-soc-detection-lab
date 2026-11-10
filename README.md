@@ -4,15 +4,15 @@
 
 ---
 
-## Summary
+## Recruiter TL;DR
 
-This repository documents an isolated SOC detection lab built with IBM QRadar CE 7.3.3 and a segmented pfSense network. It covers log collection from Ubuntu (auditd/rsyslog) and Windows (WinCollect/Sysmon), detection with QRadar CRE and AQL, MITRE ATT&CK mapping, event investigation, and incident-response verification.
+This project demonstrates SIEM configuration, custom correlation rule authoring (QRadar CRE), AQL query engineering as a fallback when parsing limitations blocked rule-based detection, cross-platform log collection (Linux auditd + Windows WinCollect/Sysmon), MITRE ATT&CK mapping, and a full detect → investigate → respond → verify cycle — including real attacker-IP blocking, rogue account removal, and credential rotation, not just alert generation.
 
-The documentation records implementation issues and their workarounds, including firewall anti-spoofing behavior, DSM parsing limitations, and RDP Network Level Authentication constraints. See the [troubleshooting journal](lessons-learned/troubleshooting-journal.md) for diagnostic details.
+Three genuine engineering gaps were found during the build (a firewall anti-spoofing rule silently dropping traffic, a DSM that never parsed the field a rule depended on, an RDP brute-force tool failing against NLA) and are documented honestly as a troubleshooting journal rather than edited out of the story — see [`lessons-learned/`](lessons-learned/troubleshooting-journal.md).
 
 Published evidence exports use anonymized account and host labels; private lab IP addresses are retained. The SHA-256 manifest covers these sanitized files.
 
-Start here: [Lab Setup](lab-setup/README.md) · [Detection Rules](detection-rules/) · [Evidence](evidence/) · [Lessons Learned](lessons-learned/troubleshooting-journal.md) · [MITRE ATT&CK Mapping](investigation-notes/mitre-attack-mapping.md)
+Start here: [Lab Setup](lab-setup/README.md) · [Detection Rules](detection-rules/) · [Evidence](evidence/) · [Response Playbook](playbooks/brute-force-response.md) · [Lessons Learned](lessons-learned/troubleshooting-journal.md) · [MITRE ATT&CK Mapping](investigation-notes/mitre-attack-mapping.md)
 
 ---
 
@@ -38,23 +38,23 @@ Every action in this repository took place inside a private, isolated VMware lab
 ## Lab Architecture
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│                        Host Machine                         │
-│                                                               │
-│  ┌─────────────┐                                             │
-│  │ Kali Linux  │  192.168.20.10          WAN: 192.168.20.1  │
-│  │ (Attacker)  │───────────────┐       ┌──────────────────┐  │
-│  └─────────────┘               └──────▶│      pfSense      │  │
-│                                         │  (Firewall/Router) │  │
-│                                         └──────────┬─────────┘  │
-│                                     LAN: 192.168.10.254│        │
-│                    ┌────────────────────┬────────────┴───┐    │
-│                    ▼                    ▼                ▼    │
-│            ┌───────────────┐   ┌───────────────┐  ┌───────────┐│
-│            │  Ubuntu-Lab   │   │   Win10-Lab   │  │  QRadar CE ││
+┌────────────────────────────────────────────────────────────       ┐
+│                        Host Machine                               │
+│                                                                   │
+│  ┌─────────────┐                                                  │
+│  │ Kali Linux  │  192.168.20.10          WAN: 192.168.20.1        │
+│  │ (Attacker)  │───────────────┐       ┌──────────────────   ┐    │
+│  └─────────────┘               └──────▶│      pfSense       │     |
+│                                         │  (Firewall/Router) │    │
+│                                         └──────────┬─────────┘    │
+│                                     LAN: 192.168.10.254│          │
+│                    ┌────────────────────┬────────────┴───┐        │
+│                    ▼                    ▼                ▼        │
+│            ┌───────────────┐   ┌───────────────┐  ┌───────────   ┐│
+│            │  Ubuntu-Lab   │   │   Win10-Lab   │  │  QRadar CE   ││
 │            │ 192.168.10.20 │   │ 192.168.10.30 │  │192.168.10.103││
-│            └───────────────┘   └───────────────┘  └───────────┘│
-└────────────────────────────────────────────────────────────┘
+│            └───────────────┘   └───────────────┘  └───────────   ┘│
+└────────────────────────────────────────────────────────────       ┘
 ```
 
 Unlike a flat host-only lab, traffic from the attacker segment must traverse a real stateful firewall to reach either victim — the same firewall that, as documented in [Lessons Learned](lessons-learned/troubleshooting-journal.md), silently blocked legitimate traffic via its default anti-spoofing policy and had to be properly diagnosed and fixed.
@@ -132,12 +132,13 @@ For the network topology, VM requirements, and build order, see [Lab Setup](lab-
 ## How to Navigate This Repository
 
 ```
-qradar-soc-detection-lab/
+qradar-soc-detection-lab-starter/
 ├── detection-rules/        # QRadar CRE rules and AQL queries
 ├── evidence/               # Sanitized event exports and SHA-256 manifest
 ├── investigation-notes/    # MITRE ATT&CK mapping
 ├── lab-setup/              # Environment build and network design
 ├── lessons-learned/        # Troubleshooting journal
+├── playbooks/              # Brute-force incident response guidance
 └── screenshots/            # Lab topology and QRadar evidence
 ```
 
