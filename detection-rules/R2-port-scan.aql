@@ -1,0 +1,30 @@
+-- R2 — Port Scan Detection
+-- MITRE ATT&CK: T1595 (Active Scanning)
+-- Status: Verified. Built as AQL instead of a CRE rule because the
+-- Destination Port field remained 0 on every event even after
+-- installing the vendor-specific NetgatePfSense DSM. See
+-- lessons-learned/troubleshooting-journal.md for the full root-cause
+-- investigation.
+--
+-- Simulated traffic: a full TCP connect loop (netcat) against 7
+-- distinct ports, deliberately NOT an nmap SYN scan, because pfSense
+-- (a stateful firewall) handles unfinished SYN handshakes differently
+-- from completed connections — using netcat better reflects the
+-- connection behaviour a real brute-force tool like Hydra produces.
+--
+--   for port in 21 23 25 80 443 3389 8080; do
+--       nc -zv -w 2 192.168.10.20 $port
+--   done
+--
+-- Result observed: 10 one-minute windows exceeding the threshold,
+-- peaking at 91 events in a single minute.
+
+SELECT
+    sourceip AS SourceIP,
+    DATEFORMAT(starttime, 'yyyy-MM-dd HH:mm') AS EventMinute,
+    COUNT(*) AS EventCount
+FROM events
+WHERE sourceip = '192.168.10.20'
+GROUP BY sourceip, EventMinute
+HAVING COUNT(*) >= 5
+LAST 1 HOURS

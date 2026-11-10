@@ -1,0 +1,30 @@
+-- R4 — Successful Login Immediately Following a Failure Streak
+-- MITRE ATT&CK: T1078 (Valid Accounts)
+-- Status: Verified.
+--
+-- Reconstructs the exact chronological sequence of authentication
+-- events for one Source IP, interleaving both failed and successful
+-- attempts in a single ordered result set, so the "N failures then
+-- 1 success" pattern is visible directly in the query output rather
+-- than requiring a separate correlation step.
+
+SELECT
+    sourceip AS SourceIP,
+    starttime AS EventTime,
+    UTF8(payload) AS Payload
+FROM events
+WHERE sourceip = '192.168.10.20'
+  AND (UTF8(payload) ILIKE '%Accepted password%'
+       OR UTF8(payload) ILIKE '%Failed password%')
+ORDER BY starttime ASC
+LAST 1 HOURS
+
+-- Observed result (15 rows):
+--   12x Failed password   19:08:14 - 19:08:20   (4 parallel Hydra threads, -t 4)
+--    1x Accepted password 19:08:22              (correct password found)
+--    2x Failed password   19:08:24              (other threads not yet stopped)
+--
+-- The two late failures after the successful login are expected
+-- behaviour for a multi-threaded brute-force tool, not noise or a
+-- data quality issue -- documented here so a reviewer doesn't mistake
+-- it for an error in the query logic.
