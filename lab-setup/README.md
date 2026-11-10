@@ -12,6 +12,12 @@
 
 Host machine: 16 GB RAM total — running all five VMs simultaneously drove host memory usage to 99% (see [Lessons Learned](../lessons-learned/troubleshooting-journal.md#host-resource-contention)). Only VMs required for the current task were kept powered on.
 
+Download links for the hypervisor, VM images, firewall, and logging tools are
+listed in the repository's [Download Resources](../README.md#download-resources)
+section. The QRadar CE 7.3.3 OVA link is hosted on Dropbox rather than IBM; verify
+the image before importing it and keep this legacy appliance on an isolated
+network.
+
 ## Why a Segmented Network Instead of a Flat Lab
 
 The attacker segment (192.168.20.0/24) and the victim segment (192.168.10.0/24) are separated by a real stateful firewall rather than sharing a single host-only switch. This was a deliberate choice: it forces every piece of attack traffic to cross an actual security boundary, closer to how traffic reaches an internal host in a real network, and it surfaces real firewall-layer failure modes (see the anti-spoofing incident in Lessons Learned) that a flat network would never expose.

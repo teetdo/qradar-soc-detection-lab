@@ -77,6 +77,30 @@ QRadar detection evidence.
 
 ---
 
+## Download Resources
+
+Use the vendor or upstream project pages below to obtain the software. Check each
+product's licensing, system requirements, and supported versions before
+installation.
+
+| Resource | Download / project page | Notes |
+|---|---|---|
+| IBM QRadar CE 7.3.3 | [Download the lab OVA from Dropbox](<https://www.dropbox.com/scl/fi/fs0to2u1i0g5qothyz516/QRadarCE733GA_v1_0.ova?rlkey=zs7j1kpcxgpb9rzo29l3sdngi&st=p8rhy3l0&e=1&dl>) | Third-party hosted copy supplied for this lab, not an IBM-hosted download. QRadar CE 7.3.3 is a legacy release; verify the file before importing and keep the VM isolated. |
+| VMware Workstation | [VMware Workstation and Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) | Official product page; a Broadcom account may be required to access downloads. |
+| Kali Linux | [Official Kali downloads](https://www.kali.org/get-kali/) | The lab uses Kali for controlled attack simulation; common utilities such as Hydra and netcat are available through Kali packages. |
+| Ubuntu | [Ubuntu Desktop downloads](https://ubuntu.com/download/desktop) | Select an Ubuntu release compatible with the lab instructions. |
+| Windows 10 | [Official Windows 10 ISO download](https://www.microsoft.com/en-us/software-download/windows10ISO) | Use properly licensed installation media. Windows 10 reached end of support on October 14, 2025; keep this legacy target isolated and do not expose it to the Internet. |
+| pfSense CE | [Official pfSense downloads](https://www.pfsense.org/download/) | Netgate's current installer flow may require a Netgate account. |
+| Sysmon | [Microsoft Sysinternals Sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon) | Microsoft documentation and official download. |
+| QRadar WinCollect | [IBM Fix Central](https://www.ibm.com/support/fixcentral?lc=en&lot=153) | Obtain a WinCollect build compatible with your QRadar deployment; access may require IBM entitlements. |
+| Nmap | [Official Nmap downloads](https://nmap.org/download.html) | Nmap is used only against systems in the isolated lab. |
+| THC Hydra | [Upstream Hydra project and releases](https://github.com/vanhauser-thc/thc-hydra/releases) | Use only for authorized simulations against lab-owned systems. |
+| auditd and rsyslog | [Ubuntu package search](https://packages.ubuntu.com/) | Install from the Ubuntu repositories on the Linux VM (for example, with `apt`). |
+
+For the network topology, VM requirements, and build order, see [Lab Setup](lab-setup/README.md).
+
+---
+
 ## Detection Scenarios
 
 | # | Scenario | MITRE ATT&CK | Detection Method | Status |
