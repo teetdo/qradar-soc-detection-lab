@@ -89,7 +89,7 @@ installation.
 | VMware Workstation | [VMware Workstation and Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) | Official product page; a Broadcom account may be required to access downloads. |
 | Kali Linux | [Official Kali downloads](https://www.kali.org/get-kali/) | The lab uses Kali for controlled attack simulation; common utilities such as Hydra and netcat are available through Kali packages. |
 | Ubuntu | [Ubuntu Desktop downloads](https://ubuntu.com/download/desktop) | Select an Ubuntu release compatible with the lab instructions. |
-| Windows 10 | [Official Windows 10 ISO download](https://www.microsoft.com/en-us/software-download/windows10ISO) | Use properly licensed installation media. Windows 10 reached end of support on October 14, 2025; keep this legacy target isolated and do not expose it to the Internet. |
+| Windows 10 | [Download Windows 10 ISO](https://drive.google.com/file/d/1oV3xVOG22IwNZUL0BZxnUIAu6gO3JA20/view?usp=drive_link) | Use properly licensed installation media. Windows 10 reached end of support on October 14, 2025; keep this legacy target isolated and do not expose it to the Internet. |
 | pfSense CE | [Official pfSense downloads](https://www.pfsense.org/download/) | Netgate's current installer flow may require a Netgate account. |
 | Sysmon | [Microsoft Sysinternals Sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon) | Microsoft documentation and official download. |
 | QRadar WinCollect | [IBM Fix Central](https://www.ibm.com/support/fixcentral?lc=en&lot=153) | Obtain a WinCollect build compatible with your QRadar deployment; access may require IBM entitlements. |
