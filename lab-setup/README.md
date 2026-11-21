@@ -33,6 +33,16 @@ The attacker segment (192.168.20.0/24) and the victim segment (192.168.10.0/24) 
 
 The contrast between the Linux syslog path (catch-all DSM, misattributed Source IP) and the Windows WinCollect path (dedicated agent, correct parsing from the start) is one of the clearest findings of this lab: **log collection method matters more than log source type** when it comes to field-level parsing accuracy.
 
+### pfSense DSM verification status
+
+| Stage | Status | Evidence |
+|---|---|---|
+| Before DSM training | Not parsed by the Netgate rule; the firewall event stream was incomplete or inconsistent and Destination Port showed `0` | The initial lab evidence was not suitable for CRE-based port detection |
+| After Remote Logging and DSM Editor training | Verified | QRadar received `Firewall - Deny` events from `pfSense-Firewall` |
+| DSM | Netgate pfSense DSM | Log Source Type: `Netgate pfSense` |
+| Parsed field | Verified | Destination Port now contains values such as `53`, `8080`, `3389`, and `443` |
+| Detection implementation | R2b CRE rule verified | `R2b - True Port Scan Detection` counts distinct Destination Ports |
+
 ## pfSense Remote Logging and Netgate DSM
 
 ### 1. Configure remote syslog on pfSense

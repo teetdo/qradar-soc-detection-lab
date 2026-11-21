@@ -1,5 +1,5 @@
 -- R2 — Port Scan Detection
--- MITRE ATT&CK: T1595 (Active Scanning)
+-- MITRE ATT&CK: T1046 (Network Service Discovery)
 -- Status: Verified as R2b CRE rule after DSM Editor training. The original
 -- AQL implementation below remains useful for the AQL workflow, but it is no
 -- longer the primary port-scan detection.

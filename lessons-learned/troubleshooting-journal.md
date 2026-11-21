@@ -83,7 +83,7 @@ Three 404s against a `null` URL plus a Dojo widget-parsing crash pointed at a Ja
 
 ## 6. RDP brute force failing for three independent, stacked reasons
 
-**Symptom:** `hydra -l labuser -P small.txt -t 4 rdp://192.168.10.30` failed every attempt with `[ERROR] freerdp: The connection failed to establish.`
+**Symptom:** `hydra -l <WINDOWS_ACCOUNT> -P small.txt -t 4 rdp://192.168.10.30` failed every attempt with `[ERROR] freerdp: The connection failed to establish.`
 
 **Root causes, found one at a time:**
 1. **NLA (Network Level Authentication)** was enabled on the Windows host. Hydra's RDP module is explicitly marked "experimental" by its own authors and does not reliably negotiate NLA. Confirmed via `Win32_TSGeneralSetting.UserAuthenticationRequired = 1`.
@@ -112,7 +112,7 @@ Three 404s against a `null` URL plus a Dojo widget-parsing crash pointed at a Ja
 
 **Root cause:** the first Windows replacement password differed by too little from the compromised value and could be found again by Hydra. The Linux credential also required a direct re-verification before containment could be considered complete.
 
-**Fix:** changed both the Linux `labuser` and Windows `Duong` credentials to materially different replacement values. Reran the original Hydra attack commands after the firewall block was restored; both completed with `0 valid password found`.
+**Fix:** changed both the Linux `<LINUX_ACCOUNT>` and Windows `<WINDOWS_ACCOUNT>` credentials to materially different replacement values. Reran the original Hydra attack commands after the firewall block was restored; both completed with `0 valid password found`.
 
 **Takeaway:** containment verification should repeat the original attack path and require a clean negative result. A nominal password-change action is insufficient unless the replacement is outside the old value and the verification is actually completed.
 

@@ -5,6 +5,10 @@ Screenshots keep their original filenames so they can be traced back to the
 collection timeline. Credentials and workstation hostnames must be redacted
 before public release.
 
+Use `<LINUX_ACCOUNT>`, `<WINDOWS_ACCOUNT>`, and `<ROGUE_ACCOUNT>` as public
+placeholder labels. Public narrative and evidence captions should not expose
+real account names even where the original local screenshot contains them.
+
 ## Architecture
 
 | Evidence | Screenshot | Verified use |
@@ -34,12 +38,6 @@ before public release.
 | Windows authentication failure events | [`qradar-windows-auth-failures.png`](qradar-windows-auth-failures.png) | Representative Windows authentication events |
 | Existing SSH brute-force offense | [`qradar-ssh-brute-force-offense.png`](qradar-ssh-brute-force-offense.png) | Representative QRadar offense view |
 | Existing R1 rule view | [`qradar-r1-brute-force-rule.png`](qradar-r1-brute-force-rule.png) | Representative SSH brute-force rule configuration |
-
-## Linux account cleanup
-
-| Evidence | Screenshot | Verified use |
-|---|---|---|
-| `attacker_acc` account removal verification | [`Screenshot 2026-11-20 165706.png`](Screenshot%202026-11-20%20165706.png) | Confirms `userdel` result and that the account no longer exists |
 
 ## Sysmon extension limitation
 

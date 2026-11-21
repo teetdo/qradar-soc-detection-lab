@@ -1,5 +1,5 @@
 -- R3 — Recon-then-Brute-Force Behavioural Chain
--- MITRE ATT&CK: T1595 (Active Scanning) -> T1110.001 (Brute Force)
+-- MITRE ATT&CK: T1046 (Network Service Discovery) -> T1110.001 (Brute Force)
 -- Status: Verified, with an honest timing caveat (see below).
 --
 -- QRadar CE's AQL engine does not support a clean time-windowed

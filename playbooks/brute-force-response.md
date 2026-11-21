@@ -40,8 +40,8 @@ are a practical breakdown for this project, not a claim about NIST's phase count
 - If unauthorized account changes are confirmed, preserve relevant evidence
   first, then remove or disable the affected account through the system's
   approved administration process.
-- In the verified lab run, `hacker_test` was removed from Windows and the
-  stray Linux `attacker_acc` account was confirmed absent; verify with the
+- In the verified lab run, `<ROGUE_WINDOWS_ACCOUNT>` was removed from Windows and the
+  stray Linux `<ROGUE_LINUX_ACCOUNT>` account was confirmed absent; verify with the
   platform's direct account and group listing rather than assuming removal.
 - Review relevant authentication and account-change logs for additional
   unauthorized changes. This lab does not automate that broader review.

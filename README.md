@@ -12,6 +12,8 @@ Three genuine engineering gaps were found during the build (a firewall anti-spoo
 
 Published evidence exports use anonymized account and host labels; private lab IP addresses are retained. The SHA-256 manifest covers these sanitized files.
 
+**Anonymization convention:** public documentation uses `<LINUX_ACCOUNT>`, `<WINDOWS_ACCOUNT>`, and `<ROGUE_ACCOUNT>` instead of real lab usernames where account identity is not technically essential. Raw screenshots are retained only as local evidence and must be redacted before public publication.
+
 Start here: [Lab Setup](lab-setup/README.md) · [Detection Rules](detection-rules/) · [Evidence](evidence/) · [Response Playbook](playbooks/brute-force-response.md) · [Lessons Learned](lessons-learned/troubleshooting-journal.md) · [MITRE ATT&CK Mapping](investigation-notes/mitre-attack-mapping.md)
 
 ---
@@ -107,8 +109,8 @@ For the network topology, VM requirements, and build order, see [Lab Setup](lab-
 | # | Scenario | MITRE ATT&CK | Detection Method | Status |
 |---|---|---|---|---|
 | 1 | SSH Brute Force (Linux) | T1110.001 | QRadar CRE custom rule — threshold + payload match | ✅ Complete |
-| 2 | Port Scan via Firewall Logs | T1595 | R2b CRE rule counting distinct Destination Ports | ✅ Complete |
-| 3 | Recon → Brute Force Chain | T1595 → T1110.001 | AQL, two-phase correlation; Phase 1 now also verified with distinct-port AQL v2 | ✅ Complete (timing caveat documented) |
+| 2 | Network Service Discovery via Firewall Logs | T1046 | R2 experimental AQL count, followed by R2b CRE rule counting distinct Destination Ports | ✅ Complete |
+| 3 | Recon → Brute Force Chain | T1046 → T1110.001 | AQL, two-phase correlation; Phase 1 now also verified with distinct-port AQL v2 | ✅ Complete (timing caveat documented) |
 | 4 | Successful Login After Failures | T1078 | AQL, ordered sequence reconstruction | ✅ Complete |
 | 5 | RDP Brute Force (Windows) | T1110.001 | QRadar CRE custom rule (category-based, cleanly parsed) | ✅ Complete |
 | 6 | Post-Exploitation: Account Creation & Privilege Escalation | T1136.001, T1087.001 | auditd (Linux) / Security Event Log (Windows) cross-platform comparison | ✅ Complete |
