@@ -6,3 +6,18 @@ Desktop.ini
 .env.*
 !.env.example
 *.log
+*.lnk
+desktop.ini
+
+# Preserve selected, publication-ready evidence only.
+# Raw dated screenshots are local working files and are not part of the
+# evidence set unless explicitly allow-listed below.
+screenshots/Screenshot *.png
+!screenshots/Screenshot 2026-11-07 154410.png
+!screenshots/Screenshot 2026-11-17 105847.png
+!screenshots/Screenshot 2026-11-17 141453.png
+!screenshots/Screenshot 2026-11-17 142733.png
+!screenshots/Screenshot 2026-11-17 144236.png
+!screenshots/Screenshot 2026-11-19 225755.png
+!screenshots/Screenshot 2026-11-21 115251.png
+!screenshots/Screenshot 2026-11-21 115330.png

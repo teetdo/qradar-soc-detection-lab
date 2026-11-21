@@ -48,6 +48,13 @@ real account names even where the original local screenshot contains them.
 
 ## Evidence selection notes
 
+- **Only screenshots listed in this gallery belong to the main evidence set.**
+  Dated `Screenshot ...png` files that are not listed here are local
+  exploratory, troubleshooting, duplicate, or superseded captures and must not
+  be added to the public repository.
+- The Git ignore rule under `.gitignore` excludes unselected dated screenshots
+  by default. A screenshot is added to evidence only after explicit
+  allow-listing and redaction review.
 - The folder contains more than 700 screenshots, including setup trials,
   exploratory screenshots, duplicate captures, and console output. The table
   above selects only images that visibly support architecture, detection,
