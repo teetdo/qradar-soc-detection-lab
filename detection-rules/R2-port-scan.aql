@@ -1,10 +1,18 @@
 -- R2 — Port Scan Detection
 -- MITRE ATT&CK: T1595 (Active Scanning)
--- Status: Verified. Built as AQL instead of a CRE rule because the
--- Destination Port field remained 0 on every event even after
--- installing the vendor-specific NetgatePfSense DSM. See
--- lessons-learned/troubleshooting-journal.md for the full root-cause
--- investigation.
+-- Status: Verified as R2b CRE rule after DSM Editor training. The original
+-- AQL implementation below remains useful for the AQL workflow, but it is no
+-- longer the primary port-scan detection.
+--
+-- Current rule: R2b - True Port Scan Detection
+-- Test stack: at least 5 events are seen with the same Source IP and
+-- different Destination Port in 5 minutes
+-- Scope: Log Source Type = Netgate pfSense
+--
+-- Initial issue: Destination Port remained 0 after installing the
+-- NetgatePfSense DSM. A real pfSense filterlog payload was assigned to
+-- the pfSense-Firewall Log Source through DSM Editor, after which the
+-- Destination Port field parsed correctly (53, 8080, 3389, 443, etc.).
 --
 -- Simulated traffic: a full TCP connect loop (netcat) against 7
 -- distinct ports, deliberately NOT an nmap SYN scan, because pfSense

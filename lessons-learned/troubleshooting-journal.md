@@ -67,15 +67,17 @@ Three 404s against a `null` URL plus a Dojo widget-parsing crash pointed at a Ja
 
 ---
 
-## 5. Firewall DSM installed correctly but never received events
+## 5. Firewall DSM initially showed zero destination ports, then parsed live data
 
 **Symptom:** a dedicated Netgate pfSense DSM was installed on QRadar (two RPM packages, `DSMCommon` then `NetgatePfSense`, in the correct dependency order) and a matching Log Source created — yet the Log Source's status remained `N/A` with `Last Event Time: N/A` indefinitely, and the Destination Port field on related events stayed `0`.
 
-**Status:** root cause **not fully resolved** within this project's timeframe. Installing the correct DSM package is necessary but was not sufficient — the actual routing of events to that Log Source never happened, and the specific reason (Log Source Identifier mismatch, protocol misconfiguration, or a QRadar-side re-indexing delay) was not isolated.
+**Initial workaround:** port-scan detection (R2) and the recon phase of the behavioural chain (R3) were built in AQL against the raw event stream instead of depending on the parsed Destination Port field.
 
-**Workaround:** port-scan detection (R2) and the recon phase of the behavioural chain (R3) were built in AQL against the raw event stream instead of depending on the parsed Destination Port field.
+**Resolution:** after directly using a real pfSense `filterlog` payload in Admin → DSM Editor for the `pfSense-Firewall` Log Source, the Netgate pfSense DSM began populating structured fields. The Log Source status changed to Success/Last Event Time updated, Event Name became `Firewall - Deny`, and Destination Port returned real values such as `53`, `8080`, `3389`, and `443` for subsequent traffic.
 
-**Takeaway:** installing the "correct" vendor DSM does not guarantee parsing will work immediately — always verify against live data in Log Activity before building detection logic on top of a field you assume is populated. Documenting an unresolved gap honestly, with the workaround that was used instead, is more valuable than pretending the DSM worked.
+**Verification:** R2 was rewritten as R2b CRE rule, counting distinct Destination Ports from the same Source IP in five minutes. It produced Offense #9 for test traffic. R3 Phase 1 was also verified with AQL v2 using `UNIQUECOUNT(destinationport)` and `LOGSOURCENAME(logsourceid)='pfSense-Firewall'`.
+
+**Takeaway:** installing a vendor DSM is not sufficient by itself. A live payload must be assigned through QRadar's parser workflow and verified in Log Activity before detection logic is considered field-dependent.
 
 ---
 
@@ -101,3 +103,27 @@ Three 404s against a `null` URL plus a Dojo widget-parsing crash pointed at a Ja
 **Fix / discipline applied:** rather than compute or publish any cross-system latency or SLA figure from mismatched timestamps, this was documented as a known limitation, and such measurements were explicitly withheld rather than estimated. (General recommendation: NTP-sync every lab host to a common source before relying on cross-system timing.)
 
 **Takeaway:** a silently wrong number is worse than an explicitly missing one. Not fabricating a result when the underlying data can't support it is itself a documented engineering decision in this project.
+
+---
+
+## 8. Password recovery must be testable, not merely nominal
+
+**Symptom:** a password change can appear complete while still remaining in the range of a practical brute-force attempt; changing only capitalization or adding one predictable character is not a strong containment action.
+
+**Root cause:** the first Windows replacement password differed by too little from the compromised value and could be found again by Hydra. The Linux credential also required a direct re-verification before containment could be considered complete.
+
+**Fix:** changed both the Linux `labuser` and Windows `Duong` credentials to materially different replacement values. Reran the original Hydra attack commands after the firewall block was restored; both completed with `0 valid password found`.
+
+**Takeaway:** containment verification should repeat the original attack path and require a clean negative result. A nominal password-change action is insufficient unless the replacement is outside the old value and the verification is actually completed.
+
+---
+
+## 9. QRadar CE may be unable to accept newer signed Content Extensions
+
+**Symptom:** IBM QRadar Content Extension for Sysmon 1.3.2 could not be installed on the legacy QRadar CE 7.3.3 appliance.
+
+**Root cause:** the package requires QRadar calendar version `2020.11.0` or later, while this CE appliance is an original ISO build without the required Fix Pack level. Editing manifest version fields did not bypass the problem. The JAR-style package also contains IBM RSA signatures and SHA-256 digests in `META-INF`; modifying packaged files breaks the digest/signature chain and cannot be repaired without IBM's signing key.
+
+**Fix:** stopped the workaround attempts rather than bypassing package integrity checks. Windows Security events continue to arrive through the shared Microsoft Windows Security Event Log DSM, but Sysmon values remain raw payload text instead of structured fields such as `ProcessGuid`, `Image`, and `CommandLine`.
+
+**Takeaway:** an integrity-protected extension cannot be modified safely to work around a version mismatch. Document the platform constraint and preserve the available telemetry rather than inventing a successful structured-parser integration.

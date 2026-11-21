@@ -7,7 +7,20 @@
 -- reconstructed as two separate queries whose results are compared
 -- by timestamp rather than as a single correlated query.
 --
--- Phase 1 (reconnaissance) reuses R2-port-scan.aql.
+-- Phase 1 (reconnaissance), verified with AQL v2 after DSM parsing was fixed:
+-- Saved Search: R3 - Phase 1 Recon (AQL v2, distinct port)
+-- Result: SourceIP=192.168.20.10, DistinctPorts=7
+
+SELECT
+    sourceip AS SourceIP,
+    UNIQUECOUNT(destinationport) AS DistinctPorts
+FROM events
+WHERE sourceip = '192.168.20.10'
+  AND LOGSOURCENAME(logsourceid) = 'pfSense-Firewall'
+GROUP BY sourceip
+HAVING UNIQUECOUNT(destinationport) >= 5
+LAST 1 HOURS
+
 -- Phase 2 (brute force) is below.
 
 SELECT

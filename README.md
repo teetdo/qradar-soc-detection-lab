@@ -8,7 +8,7 @@
 
 This project demonstrates SIEM configuration, custom correlation rule authoring (QRadar CRE), AQL query engineering as a fallback when parsing limitations blocked rule-based detection, cross-platform log collection (Linux auditd + Windows WinCollect/Sysmon), MITRE ATT&CK mapping, and a full detect → investigate → respond → verify cycle — including real attacker-IP blocking, rogue account removal, and credential rotation, not just alert generation.
 
-Three genuine engineering gaps were found during the build (a firewall anti-spoofing rule silently dropping traffic, a DSM that never parsed the field a rule depended on, an RDP brute-force tool failing against NLA) and are documented honestly as a troubleshooting journal rather than edited out of the story — see [`lessons-learned/`](lessons-learned/troubleshooting-journal.md).
+Three genuine engineering gaps were found during the build (a firewall anti-spoofing rule silently dropping traffic, a firewall DSM that initially left Destination Port at zero until trained with live payload data, and an RDP brute-force tool failing against NLA). These are documented honestly as a troubleshooting journal rather than edited out of the story — see [`lessons-learned/`](lessons-learned/troubleshooting-journal.md).
 
 Published evidence exports use anonymized account and host labels; private lab IP addresses are retained. The SHA-256 manifest covers these sanitized files.
 
@@ -91,6 +91,7 @@ installation.
 | Ubuntu | [Ubuntu Desktop downloads](https://ubuntu.com/download/desktop) | Select an Ubuntu release compatible with the lab instructions. |
 | Windows 10 | [Download Windows 10 ISO](https://drive.google.com/file/d/1oV3xVOG22IwNZUL0BZxnUIAu6gO3JA20/view?usp=drive_link) | Use properly licensed installation media. Windows 10 reached end of support on October 14, 2025; keep this legacy target isolated and do not expose it to the Internet. |
 | pfSense CE | [Official pfSense downloads](https://www.pfsense.org/download/) | Netgate's current installer flow may require a Netgate account. |
+| Netgate pfSense DSM for QRadar | [IBM Fix Central](https://www.ibm.com/support/fixcentral?lc=en&lot=153) | Obtain the compatible `DSM-DSMCommon` and `DSM-NetgatePfSense` RPM packages for the QRadar 7.3.3 appliance. IBM entitlements or support access may be required; verify that the package version supports the deployed QRadar release. |
 | Sysmon | [Microsoft Sysinternals Sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon) | Microsoft documentation and official download. |
 | QRadar WinCollect | [IBM Fix Central](https://www.ibm.com/support/fixcentral?lc=en&lot=153) | Obtain a WinCollect build compatible with your QRadar deployment; access may require IBM entitlements. |
 | Nmap | [Official Nmap downloads](https://nmap.org/download.html) | Nmap is used only against systems in the isolated lab. |
@@ -106,14 +107,14 @@ For the network topology, VM requirements, and build order, see [Lab Setup](lab-
 | # | Scenario | MITRE ATT&CK | Detection Method | Status |
 |---|---|---|---|---|
 | 1 | SSH Brute Force (Linux) | T1110.001 | QRadar CRE custom rule — threshold + payload match | ✅ Complete |
-| 2 | Port Scan via Firewall Logs | T1595 | AQL (CRE blocked by unparsed port field — see below) | ✅ Complete |
-| 3 | Recon → Brute Force Chain | T1595 → T1110.001 | AQL, two-phase correlation | ✅ Complete (timing caveat documented) |
+| 2 | Port Scan via Firewall Logs | T1595 | R2b CRE rule counting distinct Destination Ports | ✅ Complete |
+| 3 | Recon → Brute Force Chain | T1595 → T1110.001 | AQL, two-phase correlation; Phase 1 now also verified with distinct-port AQL v2 | ✅ Complete (timing caveat documented) |
 | 4 | Successful Login After Failures | T1078 | AQL, ordered sequence reconstruction | ✅ Complete |
 | 5 | RDP Brute Force (Windows) | T1110.001 | QRadar CRE custom rule (category-based, cleanly parsed) | ✅ Complete |
 | 6 | Post-Exploitation: Account Creation & Privilege Escalation | T1136.001, T1087.001 | auditd (Linux) / Security Event Log (Windows) cross-platform comparison | ✅ Complete |
-| 7 | Incident Response: Containment & Remediation | — | Firewall block, account removal, credential rotation, verified containment | ✅ Complete |
+| 7 | Incident Response: Containment & Remediation | — | Firewall block, account removal/absence verification, credential rotation, Hydra re-test for SSH and RDP | ✅ Complete |
 
-**Why scenario 2 isn't a CRE rule:** Destination Port stayed `0` on every event even after installing the vendor-specific firewall DSM. Rather than block on an unresolved parser issue, detection moved to AQL against the raw event stream — a documented, deliberate engineering decision, not a shortcut. Full root-cause notes in [Lessons Learned](lessons-learned/troubleshooting-journal.md).
+**Scenario 2 was reworked after the parser gap was resolved:** initial tests showed Destination Port as `0`, so R2 was first implemented as AQL. After using QRadar DSM Editor with a real pfSense `filterlog` payload, the Netgate pfSense DSM began parsing values such as `53`, `8080`, `3389`, and `443` correctly. R2 was then rewritten as the R2b CRE rule `R2b - True Port Scan Detection`, counting distinct Destination Ports from the same Source IP in a five-minute window. R3 Phase 1 is retained as AQL v2 for the recon view, using `UNIQUECOUNT(destinationport)` and the actual Log Source name `pfSense-Firewall`. Full root-cause and verification notes are in [Lessons Learned](lessons-learned/troubleshooting-journal.md).
 
 ---
 

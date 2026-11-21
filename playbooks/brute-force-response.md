@@ -40,6 +40,9 @@ are a practical breakdown for this project, not a claim about NIST's phase count
 - If unauthorized account changes are confirmed, preserve relevant evidence
   first, then remove or disable the affected account through the system's
   approved administration process.
+- In the verified lab run, `hacker_test` was removed from Windows and the
+  stray Linux `attacker_acc` account was confirmed absent; verify with the
+  platform's direct account and group listing rather than assuming removal.
 - Review relevant authentication and account-change logs for additional
   unauthorized changes. This lab does not automate that broader review.
 
@@ -47,6 +50,9 @@ are a practical breakdown for this project, not a claim about NIST's phase count
 
 - Reset credentials for confirmed affected accounts and review access that
   depends on those credentials.
+- Password changes must be materially different from the compromised value.
+  In this lab, Hydra was rerun for both Linux SSH and Windows RDP and produced
+  `0 valid password found` for the replacement credentials.
 - Restore temporary network restrictions when containment is no longer needed,
   and verify normal lab connectivity and logging.
 - Monitor subsequent authentication events for recurring activity.
@@ -56,7 +62,8 @@ are a practical breakdown for this project, not a claim about NIST's phase count
 - Record the timeline, evidence reviewed, decisions, containment changes, and
   recovery verification.
 - Document any detection or collection gaps as follow-up work. For example,
-  the unresolved pfSense event-collection issue is described in
+  the resolved pfSense Destination Port gap and the remaining Sysmon structured-field
+  limitation are described in
   [Lessons Learned](../lessons-learned/troubleshooting-journal.md).
 - Update detection logic or response guidance only after validating the change
   against the lab's positive and negative test cases.
